@@ -21,7 +21,7 @@ export default function LoginPage() {
       const data = await response.json();
       if (data.success) {
         document.cookie = "isLoggedIn=true; path=/";
-        router.push("/dashboard/fact-sales");
+        router.push("/home");
       } else {
         alert(data.message);
       }
@@ -34,22 +34,24 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
-      {/* Ornamen Background Lembut */}
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-100 rounded-full blur-[120px] opacity-50 -z-10"></div>
       <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-indigo-100 rounded-full blur-[120px] opacity-50 -z-10"></div>
 
       <div className="w-full max-w-md p-6">
         <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 p-10">
           <div className="text-center mb-10">
-            <div className="inline-block p-4 rounded-2xl bg-blue-50 mb-4">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+            <div className="inline-block p-1 rounded-2xl bg-white shadow-sm border border-slate-100 mb-4">
+              <img 
+                src="/favicon.ico" 
+                alt="Logo" 
+                className="w-16 h-16 object-contain p-2"
+              />
             </div>
+            
             <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
-              WH<span className="text-blue-600">ADVENTURE</span>
+              DWO<span className="text-blue-600"> 2025</span>
             </h1>
-            <p className="text-slate-500 mt-2 text-sm font-medium">Selamat datang kembali! Silakan masuk.</p>
+            <p className="text-slate-500 mt-2 text-sm font-medium">Silakan login terlebih dahulu!</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
