@@ -9,7 +9,7 @@ export default function HomePage() {
   const [salesCat, setSalesCat] = useState("All");
   const [loading, setLoading] = useState(true);
 
-  const categories = ["All", "Bikes", "Components"];
+  const categories = ["All", "Bikes", "Components", "Clothing", "Accessories"];
 
   useEffect(() => {
     setLoading(true);
