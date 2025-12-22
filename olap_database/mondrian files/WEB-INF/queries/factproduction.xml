@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Schema name="factproduction">
+    <Cube name="Production">
+        <Table name="production_fact"/>
+
+        <Dimension name="Product" foreignKey="product_key">
+            <Hierarchy hasAll="true" allMemberName="All Products" primaryKey="product_id">
+                <Table name="product" />
+                <Level name="Category" column="category"/>
+                <Level name="Subcategory" column="subcategory"/>
+                <Level name="Name" column="name" />
+            </Hierarchy>
+        </Dimension>
+
+        <Dimension name="Time" foreignKey="time_key">
+            <Hierarchy hasAll="true" allMemberName="All Times" primaryKey="time_id">
+                <Table name="time" />
+                <Level name="Year" column="years" type="Numeric" levelType="TimeYears"/>
+                <Level name="Month" column="months" type="Numeric" levelType="TimeMonths"/>
+                <Level name="Date" column="dates" type="Numeric" levelType="TimeDays"/>
+            </Hierarchy>
+        </Dimension>
+
+        <Dimension name="Location" foreignKey="location_key">
+            <Hierarchy hasAll="true" allMemberName="All Locations" primaryKey="location_id">
+                <Table name="location"/>
+                <Level name="Name" column="name"/>
+            </Hierarchy>
+        </Dimension>
+
+        <Measure name="Total Order Quantity" column="OrderQty" aggregator="sum" formatString="#,###"/>
+        <Measure name="Total Stocked Quantity" column="StockedQty" aggregator="sum" formatString="#,###"/>
+        <Measure name="Total Scrapped Quantity" column="ScrappedQty" aggregator="sum" formatString="#,###"/>
+        <Measure name="Total Production Cost" column="ProductionCost" aggregator="sum" formatString="$ #,###.00"/>
+    </Cube>
+</Schema>

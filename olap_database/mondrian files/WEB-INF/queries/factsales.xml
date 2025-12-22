@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<Schema name="factsales">
+    <Cube name="Sales">
+        <Table name="sales_fact"/>
+
+        <Dimension name="Address" foreignKey="address_key">
+            <Hierarchy hasAll="true" allMemberName="All Addresses" primaryKey="address_id">
+                <Table name="address"/>
+                <Level name="Country" column="country" uniqueMembers="true"/>
+                <Level name="Province" column="province" uniqueMembers="false"/>
+                <Level name="City" column="city" uniqueMembers="false"/>
+            </Hierarchy>
+        </Dimension>
+
+        <Dimension name="Time" foreignKey="time_key">
+            <Hierarchy hasAll="true" allMemberName="All Times" primaryKey="time_id">
+                <Table name="time" />
+                <Level name="Year" column="years" type="Numeric" levelType="TimeYears"/>
+                <Level name="Month" column="months" type="Numeric" levelType="TimeMonths"/>
+                <Level name="Date" column="dates" type="Numeric" levelType="TimeDays"/>
+            </Hierarchy>
+        </Dimension>
+
+        <Dimension name="Product" foreignKey="product_key">
+            <Hierarchy hasAll="true" allMemberName="All Products" primaryKey="product_id">
+                <Table name="product" />
+                <Level name="Category" column="category"/>
+                <Level name="Subcategory" column="subcategory"/>
+                <Level name="Name" column="name" />
+            </Hierarchy>
+        </Dimension>
+
+        <Dimension name="Customer" foreignKey="customer_key">
+            <Hierarchy hasAll="true" allMemberName="All Customers" primaryKey="customer_id">
+                <Table name="customer"/>
+                <Level name="Territory" column="territory"/>
+                <Level name="Account Number" column="AccountNumber"/>
+            </Hierarchy>
+        </Dimension>
+
+        <Measure name="Total Order Quantity" column="OrderQty" aggregator="sum" formatString="#,###"/>
+        <Measure name="Total Incomes" column="LineTotal" aggregator="sum" formatString="$ #,###.00"/>
+    </Cube>
+</Schema>

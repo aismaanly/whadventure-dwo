@@ -92,7 +92,7 @@ export default function HomePage() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
-          <KpiCard title="Total Sales Qty" value={data?.sales?.total_order_qty} color="text-indigo-600" desc="Produk terjual ke user" />
+          <KpiCard title="Total Sales Qty" value={data?.sales?.total_order_qty} color="text-indigo-600" desc="Produk terjual ke customer" />
           <KpiCard title="Total Incomes" value={data?.sales?.total_incomes} color="text-green-600" isCurrency desc="Total pendapatan masuk" />
         </div>
       </section>
