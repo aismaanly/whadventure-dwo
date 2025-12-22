@@ -7,7 +7,6 @@ router.get("/summary", async (req, res) => {
     const { prodCat, salesCat } = req.query;
 
     // --- 1. QUERY PRODUCTION ---
-    // Menggunakan fp.product_key = p.product_id sesuai production.js kamu
     let prodQuery = `
       SELECT 
         IFNULL(SUM(fp.OrderQty), 0) as total_order_qty, 
@@ -23,7 +22,6 @@ router.get("/summary", async (req, res) => {
     }
 
     // --- 2. QUERY SALES ---
-    // Menggunakan fs.product_key = p.product_id sesuai sales.js kamu
     let salesQuery = `
       SELECT 
         IFNULL(SUM(fs.OrderQty), 0) as total_order_qty, 

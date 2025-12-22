@@ -67,7 +67,7 @@ export default function ExternalPage() {
             <div className="p-4 bg-slate-50 border-t border-slate-100">
               <div className="bg-white rounded-xl shadow-inner overflow-hidden border border-slate-200">
                 <iframe
-                  src={process.env.NEXT_PUBLIC_OLAP_PURCHASING_URL}
+                  src={process.env.NEXT_PUBLIC_OLAP_PRODUCTION_URL}
                   className="w-full h-[600px] border-none"
                   title="Mondrian Production"
                 ></iframe>

@@ -6,7 +6,6 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Sesuaikan query dengan tabel users yang kamu buat di database whadventure
     const [rows] = await db.query(
       "SELECT * FROM users WHERE username = ? AND password = ?",
       [username, password]

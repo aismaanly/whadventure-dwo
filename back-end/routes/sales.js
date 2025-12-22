@@ -11,7 +11,7 @@ router.get("/by-category", async (req, res) => {
       SELECT 
         p.category,
         SUM(fs.OrderQty) AS total_qty
-      FROM sales_fact fs -- Nama tabel baru
+      FROM sales_fact fs
       JOIN product p ON fs.product_key = p.product_id
       GROUP BY p.category
       ORDER BY total_qty DESC
@@ -37,7 +37,7 @@ router.get("/top-products", async (req, res) => {
           p.name,
           p.category,
           SUM(fs.OrderQty) AS total_qty
-        FROM sales_fact fs -- Nama tabel baru
+        FROM sales_fact fs
         JOIN product p ON fs.product_key = p.product_id 
         WHERE (? IS NULL OR p.category = ?)
         GROUP BY p.product_id, p.name, p.category
@@ -63,7 +63,7 @@ router.get("/by-country", async (req, res) => {
         SELECT
           a.country,
           SUM(fs.OrderQty) AS total_qty
-        FROM sales_fact fs -- Nama tabel baru
+        FROM sales_fact fs
         JOIN address a ON fs.address_key = a.address_id 
         JOIN product p ON fs.product_key = p.product_id 
         WHERE (? IS NULL OR p.category = ?)
@@ -95,7 +95,7 @@ router.get("/top-cities", async (req, res) => {
         SELECT
           a.city,
           SUM(fs.OrderQty) AS total_qty
-        FROM sales_fact fs -- Nama tabel baru
+        FROM sales_fact fs
         JOIN address a ON fs.address_key = a.address_id 
         JOIN product p ON fs.product_key = p.product_id 
         WHERE a.country = ?
@@ -124,7 +124,7 @@ router.get("/by-date", async (req, res) => {
         SELECT
           t.fulldates AS date,
           SUM(fs.OrderQty) AS total_qty
-        FROM sales_fact fs -- Nama tabel baru
+        FROM sales_fact fs
         JOIN time t ON fs.time_key = t.time_id 
         JOIN product p ON fs.product_key = p.product_id 
         WHERE (? IS NULL OR p.category = ?)
