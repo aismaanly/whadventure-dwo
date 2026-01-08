@@ -1,12 +1,13 @@
-# 🚀 AdventureWorks Data Warehouse & OLAP Dashboard
+# 📊 AdventureWorks Data Warehouse & OLAP
 
+![Login](front-end/public/login.png)
+![AI](front-end/public/ai.png)
 Final Project Pengembangan Data Warehouse dan OLAP  
-Program Studi Sistem Informasi – UPN "Veteran" Jawa Timur
 
 ---
 
 ## 📖 Gambaran Umum
-Proyek ini merupakan **Final Project mata kuliah Data Warehouse dan OLAP** yang berfokus pada pembangunan **Data Warehouse AdventureWorks** serta implementasi **analisis OLAP dan dashboard** pada domain **Sales dan Production**.
+Proyek ini merupakan **Final Project mata kuliah Data Warehouse dan OLAP** yang berfokus pada pembangunan **Data Warehouse AdventureWorks** serta implementasi **analisis OLAP, dashboard, dan asisten cerdas berbasis AI** pada domain **Sales dan Production**.
 Sistem ini dirancang untuk mendukung **analisis data historis secara multidimensi**, sehingga mampu membantu proses pengambilan keputusan berbasis data melalui laporan dan eksplorasi OLAP.
 
 ---
@@ -16,18 +17,6 @@ Sistem ini dirancang untuk mendukung **analisis data historis secara multidimens
 - Mengimplementasikan **OLAP Cube** menggunakan Mondrian
 - Menyediakan aplikasi web untuk eksplorasi data Sales dan Production
 - Mendukung analisis data historis secara cepat dan terstruktur
-
----
-
-## 👥 Tim Pengembang  
-**Kelompok 4 – Kelas C**
-
-| Nama | NIM |
-|------|-----|
-| Najoan Rizki Pradana | 22082010056 |
-| Shania Chairunnisa Santoso | 22082010062 |
-| Salsabila Putri Azzahra | 22082010079 |
-| Aisma Nurlaili | 22082010083 |
 
 ---
 
@@ -46,6 +35,7 @@ Sistem ini dirancang untuk mendukung **analisis data historis secara multidimens
 - **Integrated ETL:** Skema data yang optimal hasil transformasi dari sistem operasional ke sistem warehouse. 
 - **Drill-down Analytics:** Kemampuan melihat detail data dari level kategori hingga level produk spesifik.
 - **OLAP Dashboard:** Visualisasi interaktif untuk data penjualan dan produksi.
+- **AI Smart Reporting:** Asisten analitik berbasis AI (Ollama) yang mampu menjawab pertanyaan natural language dan menghasilkan visualisasi chart secara instan.
 
 ---
 
@@ -54,9 +44,11 @@ Sistem ini dirancang untuk mendukung **analisis data historis secara multidimens
 ### 1️⃣ Persiapan Lingkungan dan Konfigurasi Database
 1. Pastikan sudah terinstall **XAMPP**
 2. Pastikan modul **Apache**, **MySQL**, dan **Tomcat** tersedia
-3. Gunakan **phpMyAdmin** untuk pengelolaan database
-4. Jalankan Apache dan MySQL melalui XAMPP Control Panel
-5. Akses phpMyAdmin melalui:
+3. Pastikan LLM **llama3.2** tersedia
+4. Jalankan Ollama di cmd dengan cara `ollama run llama3.2`
+5. Gunakan **phpMyAdmin** untuk pengelolaan database
+6. Jalankan Apache dan MySQL melalui XAMPP Control Panel
+7. Akses phpMyAdmin melalui:
 ```
 http://localhost/phpmyadmin
 ```
@@ -75,8 +67,6 @@ xampp/tomcat/webapps/mondrian/WEB-INF/lib
 3. Salin seluruh file dari `olap_database/mondrian-files/WEB-INF/queries` ke `xampp/tomcat/webapps/mondrian/WEB-INF/queries`
 4. Salin seluruh file dari `olap_database/mondrian-files/mondrian` ke `xampp/tomcat/webapps/mondrian`
 
----
-
 ### 3️⃣ Konfigurasi Backend (API endpoint)
 1. Masuk ke direktori back-end
 ```
@@ -88,6 +78,8 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASS=
 DB_NAME=whadventure
+OLLAMA_URL=http://127.0.0.1:11434/api/generate
+AI_MODEL=llama3.2:3b
 ```
 3. Jalankan perintah:
 ```
@@ -105,6 +97,7 @@ cd front-end
 NEXT_PUBLIC_API_BASE=http://localhost:4000
 NEXT_PUBLIC_OLAP_SALES_URL=http://localhost:8080/mondrian/testpage.jsp?query=factsales
 NEXT_PUBLIC_OLAP_PRODUCTION_URL=http://localhost:8080/mondrian/testpage.jsp?query=factproduction
+NEXT_PUBLIC_AI_ENDPOINT=http://localhost:4000/api/ai/chat
 ```
 3. Jalankan perintah:
 ```
@@ -113,7 +106,7 @@ npm run dev
 ```
 4. Akses aplikasi melalui browser di `http://localhost:3000`
 5. Informasi Login
-  - Username: Admin
+  - Username: admin
   - Password: admin123 
 
 
