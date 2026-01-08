@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const homeRoutes = require('./routes/home');
 const productionRoutes = require('./routes/production');
 const salesRoutes = require('./routes/sales');
+const aiRoutes = require('./routes/ai');
  
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
 app.use('/api/production', productionRoutes);
 app.use('/api/sales', salesRoutes);
+app.use('/api/ai', aiRoutes);
 
 
 // CEK SERVER
