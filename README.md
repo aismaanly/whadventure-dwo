@@ -21,7 +21,8 @@
 - **Apache (XAMPP)** – Web Server  
 - **Apache Tomcat** – Application Server  
 - **Mondrian** – OLAP Engine  
-- **phpMyAdmin** – Database Management  
+- **phpMyAdmin** – Database Management
+- **Ollama** – LLM Server 
 
 ---
 
