@@ -2,13 +2,7 @@
 
 ![Login](front-end/public/login.png)
 ![AI](front-end/public/ai.png)
-Final Project Pengembangan Data Warehouse dan OLAP  
-
----
-
-## 📖 Gambaran Umum
-Proyek ini merupakan **Final Project mata kuliah Data Warehouse dan OLAP** yang berfokus pada pembangunan **Data Warehouse AdventureWorks** serta implementasi **analisis OLAP, dashboard, dan asisten cerdas berbasis AI** pada domain **Sales dan Production**.
-Sistem ini dirancang untuk mendukung **analisis data historis secara multidimensi**, sehingga mampu membantu proses pengambilan keputusan berbasis data melalui laporan dan eksplorasi OLAP.
+>📌 Proyek ini dikembangkan sebagai **Final Project Mata Kuliah Data Warehouse dan OLAP**, dengan fokus pada pembangunan Data Warehouse AdventureWorks, implementasi analisis OLAP, dashboard analitik, serta asisten cerdas berbasis AI untuk mendukung analisis data historis multidimensi dan data-driven decision making pada domain **Sales dan Production**.
 
 ---
 
