@@ -6,6 +6,14 @@ const db = require("../db");
 router.post("/chat", async (req, res) => {
   const { message } = req.body;
 
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const groqModel = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+
+  if (!groqApiKey) {
+    console.error("AI ROUTE ERROR: GROQ_API_KEY is not configured.");
+    return res.status(500).json({ error: "GROQ_API_KEY belum dikonfigurasi di file .env" });
+  }
+
   try {
     // Definisi skema lengkap dengan instruksi relasi yang lebih detail
     const schemaInfo = `
@@ -32,22 +40,32 @@ router.post("/chat", async (req, res) => {
     `;
 
     /* --- TAHAP 1: GENERASI QUERY SQL --- */
-    const sqlGeneration = await axios.post(process.env.OLLAMA_URL, {
-      model: process.env.AI_MODEL,
-      prompt: `Berdasarkan skema database: ${schemaInfo}
-      Tugas: Ubah pertanyaan user "${message}" menjadi query SQL MySQL yang valid.
-      
-      Aturan WAJIB:
-      1. Berikan HANYA query SQL, tanpa penjelasan, tanpa Markdown code blocks, tanpa teks pembuka.
-      2. Gunakan alias 'name' untuk kolom kategori/label (sumbu X).
-      3. Gunakan alias 'sales' untuk kolom angka/metrik (sumbu Y).
-      4. Jika menanyakan tren waktu, gunakan t.months atau t.years.
-      5. Contoh format: SELECT p.category AS name, SUM(s.LineTotal) AS sales FROM sales_fact s JOIN product p ON s.product_key = p.product_id GROUP BY p.category`,
-      stream: false
+    const sqlGeneration = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: groqModel,
+      messages: [
+        {
+          role: "user",
+          content: `Berdasarkan skema database: ${schemaInfo}
+          Tugas: Ubah pertanyaan user "${message}" menjadi query SQL MySQL yang valid.
+          
+          Aturan WAJIB:
+          1. Berikan HANYA query SQL, tanpa penjelasan, tanpa Markdown code blocks, tanpa teks pembuka.
+          2. Gunakan alias 'name' untuk kolom kategori/label (sumbu X).
+          3. Gunakan alias 'sales' untuk kolom angka/metrik (sumbu Y).
+          4. Jika menanyakan tren waktu, gunakan t.months atau t.years.
+          5. Contoh format: SELECT p.category AS name, SUM(s.LineTotal) AS sales FROM sales_fact s JOIN product p ON s.product_key = p.product_id GROUP BY p.category`
+        }
+      ],
+      temperature: 0.1
+    }, {
+      headers: {
+        "Authorization": `Bearer ${groqApiKey}`,
+        "Content-Type": "application/json"
+      }
     });
 
     // Membersihkan hasil dari karakter non-SQL (Backticks, narasi, dll)
-    let potentialSql = sqlGeneration.data.response.trim();
+    let potentialSql = sqlGeneration.data.choices[0].message.content.trim();
     potentialSql = potentialSql
       .replace(/```sql/ig, "")
       .replace(/```/g, "")
@@ -95,11 +113,23 @@ router.post("/chat", async (req, res) => {
          Jika ini pertanyaan data, katakan data tidak ditemukan atau terjadi error pada query. 
          Status Error: ${dbError || "Tidak ada data"}.`;
 
-    const finalAnalysis = await axios.post(process.env.OLLAMA_URL, {
-      model: process.env.AI_MODEL,
-      prompt: narasiPrompt,
-      stream: false
+    const finalAnalysis = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: groqModel,
+      messages: [
+        {
+          role: "user",
+          content: narasiPrompt
+        }
+      ],
+      temperature: 0.7
+    }, {
+      headers: {
+        "Authorization": `Bearer ${groqApiKey}`,
+        "Content-Type": "application/json"
+      }
     });
+
+    const reply = finalAnalysis.data.choices[0].message.content;
 
     /* --- TAHAP 3: PENENTUAN TIPE CHART --- */
     const msgLower = message.toLowerCase();
@@ -115,7 +145,7 @@ router.post("/chat", async (req, res) => {
     }
 
     res.json({
-      reply: finalAnalysis.data.response,
+      reply: reply,
       chartData: chartData,
       chartType: chartType,
       hasChart: !!(chartData && chartData.length > 0),
@@ -123,8 +153,8 @@ router.post("/chat", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("AI ROUTE ERROR:", error);
-    res.status(500).json({ error: "Gagal memproses permintaan AI" });
+    console.error("AI ROUTE ERROR:", error.response ? error.response.data : error.message);
+    res.status(500).json({ error: "Gagal memproses permintaan AI dengan Groq" });
   }
 });
 
