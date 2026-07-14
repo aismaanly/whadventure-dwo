@@ -46,7 +46,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold text-slate-800">
               Summary (Production) {prodCat !== "All" && <span className="text-blue-600">: {prodCat}</span>}
             </h2>
-            <p className="text-sm text-slate-500">Pantau output dan efisiensi produksi.</p>
+            <p className="text-sm text-slate-500">Pantau performa output, efisiensi lokasi kerja, serta alokasi biaya produksi.</p>
           </div>
           
           <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100">
@@ -76,7 +76,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold text-slate-800">
               Summary (Sales) {salesCat !== "All" && <span className="text-indigo-600">: {salesCat}</span>}
             </h2>
-            <p className="text-sm text-slate-500">Pantau performa penjualan dan pendapatan.</p>
+            <p className="text-sm text-slate-500">Pantau volume transaksi penjualan, kuantitas produk, dan akumulasi pendapatan.</p>
           </div>
           
           <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100">
@@ -110,11 +110,11 @@ function KpiCard({ title, value, color, isCurrency, desc }) {
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{title}</p>
         <p className={`text-3xl font-black mt-3 ${color}`}>
           {isCurrency 
-            ? `$ ${numericValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+            ? `$ ${numericValue.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
             : numericValue.toLocaleString("id-ID")}
         </p>
       </div>
-      <p className="text-[10px] text-slate-400 mt-4 font-medium italic">
+      <p className="mt-4 text-xs text-slate-400">
         {desc}
       </p>
     </div>

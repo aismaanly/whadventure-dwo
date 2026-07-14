@@ -1,14 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }) {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     router.push("/login");
+  };
+
+  const handleLogout = () => {
+    setShowLogoutModal(true);
   };
 
   const isActive = (path) => pathname === path;
@@ -17,13 +23,13 @@ export default function DashboardLayout({ children }) {
     <div className="flex min-h-screen bg-slate-100 font-sans">
       {/* SIDEBAR */}
       <aside className="w-64 bg-white shadow-xl flex flex-col sticky top-0 h-screen z-20">
-        
+
         {/* Header logo */}
         <div className="h-20 flex items-center px-6 border-b border-slate-100">
           <div className="mr-3 shadow-md rounded-xl overflow-hidden bg-white p-1 border border-slate-100">
-            <img 
-              src="/favicon.ico" 
-              alt="Logo" 
+            <img
+              src="/favicon.ico"
+              alt="Logo"
               className="w-8 h-8 object-contain"
             />
           </div>
@@ -40,17 +46,15 @@ export default function DashboardLayout({ children }) {
 
         {/* Nav items */}
         <nav className="flex-1 px-3 space-y-1 text-sm overflow-y-auto mt-2">
-          
+
           {/* Menu Home */}
-          <a 
-            href="/home" 
-            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${
-              isActive("/home") ? "bg-blue-50 text-blue-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
-            }`}
+          <a
+            href="/home"
+            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${isActive("/home") ? "bg-blue-50 text-blue-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${
-              isActive("/home") ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
-            }`}>
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${isActive("/home") ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
@@ -62,15 +66,13 @@ export default function DashboardLayout({ children }) {
           </a>
 
           {/* Menu Fact Sales */}
-          <a 
-            href="/fact-sales" 
-            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${
-              isActive("/fact-sales") ? "bg-emerald-50 text-emerald-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
-            }`}
+          <a
+            href="/fact-sales"
+            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${isActive("/fact-sales") ? "bg-emerald-50 text-emerald-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${
-              isActive("/fact-sales") ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-500"
-            }`}>
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${isActive("/fact-sales") ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -82,15 +84,13 @@ export default function DashboardLayout({ children }) {
           </a>
 
           {/* Menu Fact Production */}
-          <a 
-            href="/fact-production" 
-            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${
-              isActive("/fact-production") ? "bg-indigo-50 text-indigo-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
-            }`}
+          <a
+            href="/fact-production"
+            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${isActive("/fact-production") ? "bg-indigo-50 text-indigo-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${
-              isActive("/fact-production") ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500"
-            }`}>
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${isActive("/fact-production") ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
@@ -102,15 +102,13 @@ export default function DashboardLayout({ children }) {
           </a>
 
           {/* Menu AI Report */}
-          <a 
-            href="/ai-report" 
-            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${
-              isActive("/ai-report") ? "bg-amber-50 text-amber-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
-            }`}
+          <a
+            href="/ai-report"
+            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${isActive("/ai-report") ? "bg-amber-50 text-amber-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${
-              isActive("/ai-report") ? "bg-amber-500 text-white" : "bg-slate-100 text-slate-500"
-            }`}>
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${isActive("/ai-report") ? "bg-amber-500 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
@@ -122,15 +120,13 @@ export default function DashboardLayout({ children }) {
           </a>
 
           {/* Menu External Page */}
-          <a 
-            href="/external" 
-            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${
-              isActive("/external") ? "bg-purple-50 text-purple-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
-            }`}
+          <a
+            href="/external"
+            className={`flex items-center px-4 py-3 rounded-xl font-medium transition-all ${isActive("/external") ? "bg-purple-50 text-purple-600 shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${
-              isActive("/external") ? "bg-purple-500 text-white" : "bg-slate-100 text-slate-500"
-            }`}>
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-colors ${isActive("/external") ? "bg-purple-500 text-white" : "bg-slate-100 text-slate-500"
+              }`}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
@@ -144,7 +140,7 @@ export default function DashboardLayout({ children }) {
 
         {/* TOMBOL LOGOUT */}
         <div className="px-3 py-4 border-t border-slate-50">
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full flex items-center px-4 py-3 rounded-xl font-bold text-red-500 hover:bg-red-50 transition-all group"
           >
@@ -158,7 +154,7 @@ export default function DashboardLayout({ children }) {
         </div>
 
         <div className="px-6 py-4 border-t border-slate-50 text-[10px] text-slate-400 text-center font-medium">
-          DWO Kelompok 4 &copy; {new Date().getFullYear()}
+          DWO Kelompok 4 &copy; 2025
         </div>
       </aside>
 
@@ -169,6 +165,35 @@ export default function DashboardLayout({ children }) {
           {children}
         </div>
       </main>
+
+      {/* MODAL LOGOUT */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl transform transition-all text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">Keluar</h3>
+            <p className="text-slate-500 mb-6">Apakah Anda yakin ingin keluar dari dashboard?</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-all"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-red-200 transition-all"
+              >
+                Ya, Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

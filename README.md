@@ -1,6 +1,6 @@
 # 📊 AdventureWorks Data Warehouse & OLAP
 
-![Login](front-end/public/login.png)
+![Login](front-end/public/dashboard.png)
 ![AI](front-end/public/ai.png)
 >📌 Proyek ini dikembangkan sebagai **Final Project Mata Kuliah Data Warehouse dan OLAP**, dengan fokus pada pembangunan Data Warehouse AdventureWorks, implementasi analisis OLAP, dashboard analitik, serta asisten cerdas berbasis AI untuk mendukung analisis data historis multidimensi dan data-driven decision making pada domain **Sales dan Production**.
 
@@ -22,7 +22,7 @@
 - **Apache Tomcat** – Application Server  
 - **Mondrian** – OLAP Engine  
 - **phpMyAdmin** – Database Management
-- **Ollama** – LLM Server 
+- **Groq API** – LLM Service
 
 ---
 
@@ -30,7 +30,7 @@
 - **Integrated ETL:** Skema data yang optimal hasil transformasi dari sistem operasional ke sistem warehouse. 
 - **Drill-down Analytics:** Kemampuan melihat detail data dari level kategori hingga level produk spesifik.
 - **OLAP Dashboard:** Visualisasi interaktif untuk data penjualan dan produksi.
-- **AI Smart Reporting:** Asisten analitik berbasis AI (Ollama) yang mampu menjawab pertanyaan natural language dan menghasilkan visualisasi chart secara instan.
+- **AI Smart Reporting:** Asisten analitik berbasis AI (Groq) yang mampu menjawab pertanyaan natural language dan menghasilkan visualisasi chart secara instan.
 
 ---
 
@@ -39,11 +39,9 @@
 ### 1️⃣ Persiapan Lingkungan dan Konfigurasi Database
 1. Pastikan sudah terinstall **XAMPP**
 2. Pastikan modul **Apache**, **MySQL**, dan **Tomcat** tersedia
-3. Pastikan LLM **llama3.2** tersedia
-4. Jalankan Ollama di cmd dengan cara `ollama run llama3.2`
-5. Gunakan **phpMyAdmin** untuk pengelolaan database
-6. Jalankan Apache dan MySQL melalui XAMPP Control Panel
-7. Akses phpMyAdmin melalui:
+3. Gunakan **phpMyAdmin** untuk pengelolaan database
+4. Jalankan Apache dan MySQL melalui XAMPP Control Panel
+5. Akses phpMyAdmin melalui:
 ```
 http://localhost/phpmyadmin
 ```
@@ -67,14 +65,14 @@ xampp/tomcat/webapps/mondrian/WEB-INF/lib
 ```
 cd back-end
 ```
-2. Buat file .env dan sesuaikan kredensial database Anda:
+2. Salin file `.env.example` menjadi `.env` dan sesuaikan kredensial database serta API Key Groq Anda:
 ```
 DB_HOST=localhost
 DB_USER=root
 DB_PASS=
 DB_NAME=whadventure
-OLLAMA_URL=http://127.0.0.1:11434/api/generate
-AI_MODEL=llama3.2:3b
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 3. Jalankan perintah:
 ```
@@ -87,7 +85,7 @@ node index.js
 ```
 cd front-end
 ```
-2. Buat file .env
+2. Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi (jika perlu):
 ```
 NEXT_PUBLIC_API_BASE=http://localhost:4000
 NEXT_PUBLIC_OLAP_SALES_URL=http://localhost:8080/mondrian/testpage.jsp?query=factsales

@@ -5,275 +5,314 @@ import { useEffect, useState } from "react";
 import SalesByCategoryPie from "./salesByPie";
 import SalesTrendChart from "./salesTrendChart";
 import TopProductsCard from "./topProductChart";
-import CountryCitiesSection from "./countryCities";
+import GeographyChart from "./countryCities"; // Note: file is still countryCities.js but we export GeographyChart
+import CustomerTypeChart from "./customerTypeChart";
+import ShippingMethodChart from "./shippingMethodChart";
+import TopCustomersTable from "./topCustomersTable";
+import TerritoryChart from "./territoryChart";
 
 const BASE_URL = "http://localhost:4000";
 
 export default function FactSalesPage() {
-  const [byCategory, setByCategory] = useState([]);
-  const [byDate, setByDate] = useState([]);
-  const [topProducts, setTopProducts] = useState([]);
-  const [byCountry, setByCountry] = useState([]);
-  const [topCities, setTopCities] = useState([]);
-
+  // Category states
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  
+  // Geography states
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedProvince, setSelectedProvince] = useState(null);
+
+  // Time states
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+
+  // UI state
+  const [viewMode, setViewMode] = useState("qty"); // "qty" | "revenue"
+
+  // Data states
+  const [byCategory, setByCategory] = useState([]);
+  const [byGeography, setByGeography] = useState([]);
+  const [byDate, setByDate] = useState([]);
+  const [byTerritory, setByTerritory] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [byCustomerType, setByCustomerType] = useState([]);
+  const [byShippingMethod, setByShippingMethod] = useState([]);
+  const [topCustomers, setTopCustomers] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  //Load kategori (pie chart) sekali di awal
-  useEffect(() => {
-    fetch(`${BASE_URL}/api/sales/by-category`)
-      .then((res) => res.json())
-      .then(setByCategory)
-      .catch((err) => {
-        console.error(err);
-        setByCategory([]);
-      });
-  }, []);
+  // Helper function to build query string
+  const buildQuery = () => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.append("category", selectedCategory);
+    if (selectedSubcategory) params.append("subcategory", selectedSubcategory);
+    if (selectedCountry) params.append("country", selectedCountry);
+    if (selectedProvince) params.append("province", selectedProvince);
+    if (selectedYear) params.append("year", selectedYear);
+    if (selectedMonth) params.append("month", selectedMonth);
+    return params.toString();
+  };
 
-  // Load data yang bergantung kategori by-date, top-products, by-country
+  // Unified data loader
   useEffect(() => {
-    const load = async () => {
+    const loadData = async () => {
       setLoading(true);
       setError("");
 
       try {
-        const encCat = selectedCategory
-          ? encodeURIComponent(selectedCategory)
-          : null;
+        const queryStr = `?${buildQuery()}`;
+        const limitStr = queryStr + "&limit=10";
 
-        const byDateUrl = encCat
-          ? `${BASE_URL}/api/sales/by-date?category=${encCat}`
-          : `${BASE_URL}/api/sales/by-date`;
+        const endpoints = [
+          fetch(`${BASE_URL}/api/sales/by-category${queryStr}`),
+          fetch(`${BASE_URL}/api/sales/by-geography${limitStr}`),
+          fetch(`${BASE_URL}/api/sales/by-date${queryStr}`),
+          fetch(`${BASE_URL}/api/sales/by-territory${queryStr}`),
+          fetch(`${BASE_URL}/api/sales/top-products${limitStr}`),
+          fetch(`${BASE_URL}/api/sales/by-customer-type${queryStr}`),
+          fetch(`${BASE_URL}/api/sales/by-shipping-method${queryStr}`),
+          fetch(`${BASE_URL}/api/sales/top-customers${limitStr}`),
+        ];
 
-        const topProductsUrl = encCat
-          ? `${BASE_URL}/api/sales/top-products?category=${encCat}&limit=10`
-          : `${BASE_URL}/api/sales/top-products?limit=10`;
+        const responses = await Promise.all(endpoints);
 
-        const byCountryUrl = encCat
-          ? `${BASE_URL}/api/sales/by-country?category=${encCat}`
-          : `${BASE_URL}/api/sales/by-country`;
-
-        const [byDateRes, topProdRes, byCountryRes] = await Promise.all([
-          fetch(byDateUrl),
-          fetch(topProductsUrl),
-          fetch(byCountryUrl),
-        ]);
-
-        if (!byDateRes.ok || !topProdRes.ok || !byCountryRes.ok) {
+        if (responses.some((res) => !res.ok)) {
           throw new Error("Server mengembalikan status error.");
         }
 
-        const [byDateJson, topProductsJson, byCountryJson] = await Promise.all([
-          byDateRes.json(),
-          topProdRes.json(),
-          byCountryRes.json(),
-        ]);
+        const data = await Promise.all(responses.map((res) => res.json()));
 
-        setByDate(byDateJson);
-        setTopProducts(topProductsJson);
-        setByCountry(byCountryJson);
+        setByCategory(data[0]);
+        setByGeography(data[1]);
+        setByDate(data[2]);
+        setByTerritory(data[3]);
+        setTopProducts(data[4]);
+        setByCustomerType(data[5]);
+        setByShippingMethod(data[6]);
+        setTopCustomers(data[7]);
 
-        // jika selectedCountry sekarang tidak ada di hasil baru, pilih yg pertama
-        if (
-          !selectedCountry ||
-          !byCountryJson.some((c) => c.country === selectedCountry)
-        ) {
-          setSelectedCountry(byCountryJson[0]?.country || null);
+        // Smart reset for geography if current selection is no longer valid
+        if (selectedCountry && !data[1].some(c => c.location === selectedCountry || selectedProvince)) {
+          // If we are at country level and it disappeared, reset. But if we are at province level, data[1] returns cities.
+          // To be safe and simple, we rely on the user to back out if they hit an empty state, 
+          // or we can just leave it as is to avoid complex reset logic that might backfire.
         }
+
       } catch (err) {
         console.error(err);
         setError("Gagal memuat data dashboard.");
-        setByDate([]);
-        setTopProducts([]);
-        setByCountry([]);
-        setTopCities([]);
-        setSelectedCountry(null);
       } finally {
         setLoading(false);
       }
     };
 
-    load();
-  }, [selectedCategory, selectedCountry]);
+    loadData();
+  }, [selectedCategory, selectedSubcategory, selectedCountry, selectedProvince, selectedYear, selectedMonth]);
 
-  useEffect(() => {
-    if (!selectedCountry) {
-      setTopCities([]);
-      return;
-    }
-
-    const loadCities = async () => {
-      try {
-        const encCountry = encodeURIComponent(selectedCountry);
-        const encCat = selectedCategory
-          ? encodeURIComponent(selectedCategory)
-          : null;
-
-        const url =
-          `${BASE_URL}/api/sales/top-cities?country=${encCountry}&limit=6` +
-          (encCat ? `&category=${encCat}` : "");
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Server error");
-        const json = await res.json();
-        setTopCities(json);
-      } catch (err) {
-        console.error(err);
-        setTopCities([]);
-      }
-    };
-
-    loadCities();
-  }, [selectedCountry, selectedCategory]);
-
-  // ====== overview card yang ada duatas sendiri ======
-  const totalQty = byDate.reduce(
-    (sum, row) => sum + Number(row.total_qty || 0),
-    0
-  );
-
-  const totalOrders = topProducts.reduce(
-    (sum, row) => sum + Number(row.total_qty || 0),
-    0
-  );
-
+  // metrics (we can derive totalQty and totalRevenue from byDate since it always contains the filtered sum)
+  const totalQty = byDate.reduce((sum, row) => sum + Number(row.total_qty || 0), 0);
+  const totalRevenue = byDate.reduce((sum, row) => sum + Number(row.total_revenue || 0), 0);
   const totalCategories = byCategory.length;
-  const totalCountries = byCountry.length;
+  const totalGeoNodes = byGeography.length;
 
   return (
     <div className="space-y-6">
       {/* header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-800">
-            Fact Sales Overview
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+            Sales Analytics
           </h1>
-        </div>
-        <div className="flex items-center space-x-3 text-xs text-slate-500">
-          <div className="flex items-center space-x-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>Online</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
-            <span>Store</span>
-          </div>
-        </div>
-      </div>
-
-      {/* card atas sendiri */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex flex-col justify-between">
-          <Link href="/dashboard/fact-sales/total-qty">
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase">
-                TOTAL QTY (FILTERED)
-              </p>
-              <p className="mt-3 text-3xl font-bold text-slate-900">
-                {totalQty.toLocaleString("id-ID")}
-              </p>
-            </div>
-            <p className="mt-4 text-xs text-slate-400">
-              Diakumulasikan dari seluruh baris faktur penjualan
-              {selectedCategory && (
-                <>
-                  {" "}
-                  pada kategori{" "}
-                  <span className="font-semibold">{selectedCategory}</span>.
-                </>
-              )}
-            </p>
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm p-5 text-white flex flex-col justify-between">
-          <Link href="/dashboard/fact-sales/top-products">
-            <div>
-              <p className="text-xs font-semibold uppercase text-slate-900">
-                TOTAL ORDER QTY (TOP 10)
-                {selectedCategory ? ` – ${selectedCategory}` : ""}
-              </p>
-              <p className="mt-3 text-3xl font-bold text-slate-900">
-                {totalOrders.toLocaleString("id-ID")}
-              </p>
-            </div>
-            <p className="mt-4 text-xs text-slate-400">
-              Akumulasi kuantitas dari 10 produk terlaris
-              {selectedCategory && (
-                <>
-                  {" "}
-                  pada kategori{" "}
-                  <span className="font-semibold">{selectedCategory}</span>.
-                </>
-              )}
-            </p>
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase">
-            JUMLAH KATEGORI
-          </p>
-          <p className="mt-3 text-3xl font-bold text-slate-900">
-            {totalCategories}
-          </p>
-          <p className="mt-4 text-xs text-slate-400">
-            Kategori produk yang terlibat dalam transaksi penjualan.
+          <p className="text-sm text-slate-500 mt-1">
+            Analisis komprehensif data transaksi penjualan, performa produk, dan wilayah pelanggan.
           </p>
         </div>
-
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase">
-            NEGARA TERDAFTAR
-            {selectedCategory ? ` – ${selectedCategory}` : ""}
-          </p>
-          <p className="mt-3 text-3xl font-bold text-slate-900">
-            {totalCountries}
-          </p>
-          <p className="mt-4 text-xs text-slate-400">
-            Negara tujuan pengiriman berdasarkan dimensi address.
-          </p>
+        
+        {/* VIEW MODE TOGGLE */}
+        <div className="bg-white rounded-lg p-1 border border-slate-100 flex items-center shadow-sm">
+          <button 
+            onClick={() => setViewMode("qty")}
+            className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              viewMode === "qty" ? "bg-indigo-50 text-indigo-700 shadow-sm" : "text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            Volume (Qty)
+          </button>
+          <button 
+            onClick={() => setViewMode("revenue")}
+            className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              viewMode === "revenue" ? "bg-emerald-50 text-emerald-700 shadow-sm" : "text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            Pendapatan (Revenue)
+          </button>
         </div>
       </div>
 
+      {/* ERROR */}
       {error && (
-        <p className="text-sm text-red-500">
-          {error} (cek konsol untuk detail error).
-        </p>
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100">
+          {error}
+        </div>
       )}
 
-      {/* TREND + PIE CATEGORY */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      {/* METRIC CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
+          <div>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              TOTAL QTY (FILTERED)
+            </p>
+            <p className="mt-3 text-3xl font-black text-indigo-600">
+              {totalQty.toLocaleString("id-ID")}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
+          <div>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              TOTAL REVENUE (FILTERED)
+            </p>
+            <p className="mt-3 text-3xl font-black text-emerald-600">
+              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(totalRevenue)}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
+          <div>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              {selectedCategory ? "SUBCATEGORIES" : "CATEGORIES"}
+            </p>
+            <p className="mt-3 text-3xl font-black text-amber-500">
+              {totalCategories}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
+          <div>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              {selectedCountry && selectedProvince ? "CITIES" : (selectedCountry ? "PROVINCES" : "COUNTRIES")}
+            </p>
+            <p className="mt-3 text-3xl font-black text-rose-500">
+              {totalGeoNodes}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* CHARTS LAYER 1 */}
+      <div className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
+        <div className="xl:col-span-1">
+          <SalesByCategoryPie
+            byCategory={byCategory}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            onSelectCategory={setSelectedCategory}
+            onSelectSubcategory={setSelectedSubcategory}
+            viewMode={viewMode}
+          />
+        </div>
         <div className="xl:col-span-2">
           <SalesTrendChart
             byDate={byDate}
             selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            onSelectYear={setSelectedYear}
+            onSelectMonth={setSelectedMonth}
+            viewMode={viewMode}
           />
         </div>
-
-        <SalesByCategoryPie
-          byCategory={byCategory}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
       </div>
 
-      {/* BOTTOM: TOP PRODUCTS + COUNTRY & CITIES */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TopProductsCard
-          topProducts={topProducts}
-          selectedCategory={selectedCategory}
-        />
+      {/* CHARTS LAYER 2 */}
+      <div className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
+        <div className="xl:col-span-1">
+          <GeographyChart
+            byGeography={byGeography}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            onSelectCountry={setSelectedCountry}
+            onSelectProvince={setSelectedProvince}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            viewMode={viewMode}
+          />
+        </div>
+        <div className="xl:col-span-2">
+          <TopProductsCard
+            topProducts={topProducts}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            viewMode={viewMode}
+          />
+        </div>
+      </div>
 
-        <CountryCitiesSection
-          byCountry={byCountry}
-          topCities={topCities}
-          selectedCountry={selectedCountry}
-          onSelectCountry={setSelectedCountry}
+      {/* CHARTS LAYER 3 */}
+      <div className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
+        <div className="xl:col-span-1">
+          <TerritoryChart 
+            byTerritory={byTerritory}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            viewMode={viewMode}
+          />
+        </div>
+        <div className="xl:col-span-1">
+          <CustomerTypeChart
+            byCustomerType={byCustomerType}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            viewMode={viewMode}
+          />
+        </div>
+        <div className="xl:col-span-1">
+          <ShippingMethodChart 
+            byShippingMethod={byShippingMethod}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            selectedCountry={selectedCountry}
+            selectedProvince={selectedProvince}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            viewMode={viewMode}
+          />
+        </div>
+      </div>
+
+      {/* CHARTS LAYER 4 */}
+      <div className={`grid grid-cols-1 gap-6 pb-10 transition-opacity duration-300 ${loading ? 'opacity-50' : 'opacity-100'}`}>
+        <TopCustomersTable 
+          topCustomers={topCustomers}
           selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          selectedCountry={selectedCountry}
+          selectedProvince={selectedProvince}
+          selectedYear={selectedYear}
+          selectedMonth={selectedMonth}
+          viewMode={viewMode}
         />
       </div>
     </div>

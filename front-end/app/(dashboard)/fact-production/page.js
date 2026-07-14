@@ -224,30 +224,30 @@ export default function FactProductionPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Fact Production Overview</h1>
-          <p className="text-sm text-slate-500">Ringkasan output produksi berdasarkan data warehouse <span className="font-semibold">whadventure</span>.</p>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Production Analytics</h1>
+          <p className="text-sm text-slate-500">Analisis output produksi, efisiensi lokasi kerja, serta biaya produksi secara detail.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase">Total Stocked Qty</p>
-            <p className="mt-3 text-3xl font-bold text-emerald-600">{totalStock.toLocaleString("id-ID")}</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Stocked Qty</p>
+            <p className="mt-3 text-3xl font-black text-emerald-600">{totalStock.toLocaleString("id-ID")}</p>
           </div>
           <p className="mt-4 text-xs text-slate-400">Jumlah produk yang berhasil diproduksi.</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-slate-50 flex flex-col justify-between hover:shadow-md transition-all duration-300">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase">Total Scrapped Qty</p>
-            <p className="mt-3 text-3xl font-bold text-rose-500">{totalScrap.toLocaleString("id-ID")}</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Scrapped Qty</p>
+            <p className="mt-3 text-3xl font-black text-rose-500">{totalScrap.toLocaleString("id-ID")}</p>
           </div>
           <p className="mt-4 text-xs text-slate-400">Jumlah produk cacat / dibuang selama proses produksi.</p>
         </div>
-        <div className="bg-gradient-to-r from-sky-500 to-cyan-400 rounded-2xl shadow-sm p-5 text-white flex flex-col justify-between">
+        <div className="bg-gradient-to-r from-sky-500 to-cyan-400 p-6 rounded-[24px] shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 text-white">
           <div>
-            <p className="text-xs font-semibold uppercase">Rasio Scrap</p>
-            <p className="mt-3 text-3xl font-bold">{scrapRatio.toFixed(1)}%</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-sky-100">Rasio Scrap</p>
+            <p className="mt-3 text-3xl font-black">{scrapRatio.toFixed(1)}%</p>
           </div>
           <p className="mt-4 text-xs text-sky-100">Perbandingan antara barang scrap dan seluruh output produksi.</p>
         </div>
